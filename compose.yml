@@ -1,0 +1,39 @@
+services:
+  webApp:
+    image: prabuvillan/web-app
+    restart: always
+    ports:
+      - 2000:2000
+    build: 
+      context: ./
+    depends_on:
+      - mysqlDB
+      - mongoDB
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongoDB:27017/
+      ME_CONFIG_BASICAUTH: false
+    links:
+      - mysqlDB
+
+  mysqlDB:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=quotes
+      - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
+    ports:
+      - '3306:3306'
+    
+  mongoDB:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
